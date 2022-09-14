@@ -1,55 +1,8 @@
-from itertools import product 
-from random import random, randint 
 import pygame
-import sys
+from node import Node
+from random import randint
 
-# TODO: 
-    # Write randomization function [DONE]
-    # Write function to print out nodes [DONE]
-    # Write function to connect adjacent nodes [DONE]
-    # Write evolution function (matrix version) [DONE]
-        # Write get_neighbors [DONE]
-        # Write calc_next_state [DONE]
-        # Write evolution loop [DONE]
-    # Write draw function [DONE]
-    # Write Simulate function [DONE]
-    # Write Simulator class [DONE]
-    # Make big Star Wars! [DONE]
-    # Add history to Automaton [DONE 8/2]
-    # Add key controls to simulate with history [DONE 9/10]
-    # Add option to animate to simulate function
-    # Input neighborhoods as lists of tuples
-    # Write filter functions, add ability to pass filters into simlulate
-    # Split into multiple files
-
-    # ---- Fun set stuff ----
-    # Write set version of evolution function [DONE 7/31]
-    # Write function to switch algorithms and preserve state
-    # Press button to switch algorithms
-    # Write function to change edge connections
-        # Different cases: toroid, live/dead
-        # Figure out how to handle other automatons as edges
-    # Make big star wars with multiple automatons!
-    # ----
-
-    # Write GUI to input Automatons
-    # Output videos
-    # Post on youtube
-
-    # ---- LOW PRIORITY ----
-    # Write opposites for initialization functions
-    # Input rule as string
-
-# ~~~~ GOALS ~~~~
-
-# Make minimum usable product
-    # Library to quickly simulate and visualize 2d CAs
-    # Output videos, put on youtube
-# Ability to create and link multiple Automatons in a Simulator
-
-
-
-SIZE = 1
+SIZE = 4
 
 # --- colors ---- 
 # TODO: Figure out where to put this
@@ -62,14 +15,6 @@ colors = [black, white, red, blue, green]
 pink1 = (255, 128, 128)
 pink2 = (255, 64, 64)
 colors = [black, white, pink1, pink2]
-
-class Node:
-    def __init__(self, val, x, y):
-        self.x = x
-        self.y = y
-        self.val = val
-        self.next_val = val
-        self.adj = set()
 
 class Automaton:
     def __init__(self, X, Y, S, B, G):
@@ -199,10 +144,6 @@ class Automaton:
         # Nodes to remove:
         #   Active Nodes that are dead AND have no live neighbors in active
 
-
-
-
-
         addset = set()
         remset = set()
         # Nodes to add adj to active: alive but not active
@@ -227,8 +168,6 @@ class Automaton:
         self.active = self.active - remset
 
         print(len(self.active))
-
-        
 
 
     def populate_sets(self):
@@ -264,142 +203,3 @@ class Automaton:
                 current_grid[y][x] = self.matrix[y][x].val
 
         self.history.append(current_grid)
-
-
-
-    # Connect boundaries
-
-    # connect(a1, 'right', 'a2', 'left')
-
-        
-
-class Simulator:
-    def __init__(self, automatons, coordinates, X, Y):
-        self.automatons = automatons
-        self.coordinates = coordinates 
-        self.X = X
-        self.Y = Y
-        self.index = 0
-        self.generation = 0
-
-    def update(self):
-        for ca in self.automatons:
-            # ca.evolve()
-            ca.evolve_active()
-    
-    def draw(self, screen):
-        for i, ca in enumerate(self.automatons):
-            x, y = self.coordinates[i]
-            ca.draw(screen, x, y)
-
-    def draw_history(self, screen):
-        for i, ca in enumerate(self.automatons):
-            x, y = self.coordinates[i]
-            ca.draw_history(screen, x, y, self.index)
-
-    def simulate(self):
-        # Use an iterator
-        # Use generations
-        # j increments iterator
-        # k decrements iterator
-        # if iterator < generations:
-            # draw history
-        # else
-            # draw (create new history)
-        pygame.init()
-        fps = 60
-        fpsClock = pygame.time.Clock()
-        screen = pygame.display.set_mode((self.X, self.Y))
-        paused = True
-
-        screen.fill((0, 0, 0))
-        while True:
-            assert(self.index <= self.generation, "Index is greater than generation number!")
-            if self.index < self.generation:
-                self.draw_history(screen)
-            else:
-                self.draw(screen)
-
-            for event in pygame.event.get():
-                print(event)
-                
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
-
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        paused = not paused
-
-                    if event.key == pygame.K_j:
-                        if paused:
-                            if self.index < self.generation:
-                                self.index += 1
-                            else:
-                                self.index += 1
-                                self.generation += 1
-                                self.update()
-                    if event.key == pygame.K_k:
-                        if paused:
-                            self.index -= 1
-            if not paused:
-                if self.index < self.generation:
-                    self.index += 1
-                else:
-                    self.index += 1
-                    self.generation += 1
-                    self.update()
-
-
-
-
-                # self.update()
-            # self.draw(screen)
-            # If len(history) <= iterator 
-                # draw
-            # if len(history) > iterator
-                # draw_history
-            pygame.display.flip()
-            fpsClock.tick(fps)
-
-
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
-
-    '''
-    automatons = []
-    for _ in range(5):
-        automatons.append(Automaton(10, 10, [2,3],[3],2))
-
-    for ca in automatons:
-        ca.randomize()
-
-    coordinates = []
-    for i in range(5):
-        coordinates.append((i*50, i*50))
-
-    sim = Simulator(automatons, coordinates, 500, 500)
-    sim.simulate()
-    '''
-
-
-
-    starwars = Automaton(400, 400, [3,4,5], [2], 4)
-
-    loc = (0, 0)
-
-    sim = Simulator([starwars], [loc], 900, 900)
-    sim.simulate()
-
-
-
-    
-
-
